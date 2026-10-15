@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1d9bf0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="X Mockup">
+<title>Генератор постов X — v5 (полный)</title>
+<link rel="stylesheet" href="src/css/main.css">
+</head>
+<body>
+<div class="mobile-tabbar">
+  <button id="mobileTabEditor" class="active">📝 Редактор</button>
+  <button id="mobileTabPreview">👁 Превью</button>
+</div>
+<aside class="controls">
+  <h1>
+    <span class="save-dot" id="saveDot"></span>
+    Генератор X — v5
+    <span class="save-label" id="saveLabel">Сохранено</span>
+  </h1>
+  
+  <div class="section">
+    <h2>Интерфейс редактора</h2>
+    <label class="chk"><input type="checkbox" id="uiDarkToggle"> Тёмная тема панели</label>
+  </div>
+
+  <div class="section">
+    <h2>Проект</h2>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+      Всё сохраняется в этом браузере автоматически. Для переноса между устройствами используй экспорт файла или синхронизацию через Gist.
+    </div>
+    <button class="success" id="exportProject">💾 Сохранить проект в файл</button>
+    <button class="ghost" id="importProject">📂 Загрузить проект из файла</button>
+    <button class="danger" id="clearProject" style="margin-top:8px;">🗑 Очистить всё</button>
+    <input type="file" id="importFileInput" accept="application/json">
+  </div>
+
+  <div class="section">
+    <h2>Синхронизация</h2>
+    <div class="sync-status">
+      <span class="cloud-dot" id="syncDot"></span>
+      <span id="syncStatusText">Не настроена</span>
+    </div>
+    <label>GitHub токен (scope: gist)
+      <input type="password" id="ghToken" placeholder="ghp_..." autocomplete="off">
+    </label>
+    <label>Gist ID
+      <input type="text" id="ghGistId" placeholder="оставь пустым — создастся автоматически">
+    </label>
+    <label class="chk"><input type="checkbox" id="ghAutosync"> Автосинхронизация</label>
+    <button class="ghost" id="saveSyncSettings">💾 Сохранить настройки</button>
+    <button id="cloudPull">⬇️ Загрузить из облака</button>
+    <button class="success" id="cloudPush">⬆️ Отправить в облако</button>
+    <div style="font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.5;">
+      Токен и Gist ID хранятся только в этом браузере. Ничего не отправляется никуда, кроме <b>api.github.com</b>.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Персонажи</h2>
+    <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">
+      Один раз сохрани персонажей — потом применяй их в постах и добавляй в группы одним кликом.
+    </div>
+    <div id="charactersList"></div>
+    <button class="ghost" id="addCharacter">+ Персонаж</button>
+  </div>
+
+  <div class="section">
+    <h2>Экраны</h2>
+    <div class="tabs" id="tabs"></div>
+    <button class="ghost" id="addScreen">+ Экран</button>
+  </div>
+
+  <div class="section">
+    <h2>Настройки экрана</h2>
+    <label>Название<input type="text" id="screenLabel"></label>
+    <label>Режим экрана
+      <select id="screenMode">
+        <option value="feed">Лента твитов</option>
+        <option value="notifications">Уведомления</option>
+        <option value="messages">Сообщения (список)</option>
+        <option value="dm">Открытый диалог</option>
+      </select>
+    </label>
+    <label>Заголовок в шапке<input type="text" id="navTitle"></label>
+    <label>Активная вкладка снизу
+      <select id="activeTab">
+        <option value="home">Главная</option>
+        <option value="search">Поиск</option>
+        <option value="notifications">Уведомления</option>
+        <option value="messages">Сообщения</option>
+        <option value="profile">Профиль</option>
+      </select>
+    </label>
+    <label class="chk"><input type="checkbox" id="darkPhoneToggle"> Тёмная тема телефона</label>
+    <label class="chk"><input type="checkbox" id="stretchToggle"> Растянуть по контенту</label>
+    <label class="chk"><input type="checkbox" id="profileToggle"> Показать профиль (в ленте)</label>
+    <label class="chk"><input type="checkbox" id="threadToggle" checked> Показывать линии тредов</label>
+  </div>
+
+  <div class="section">
+    <h2>Баннеры-уведомления сверху</h2>
+    <div id="bannersList"></div>
+    <button class="ghost" id="addBanner">+ Баннер</button>
+  </div>
+
+  <div class="section" id="profileFields" style="display:none;">
+    <h2>Профиль экрана</h2>
+    <div class="row">
+      <div class="av-cell" id="profileAvCell">
+        <input type="file" accept="image/*" id="profileAvInput">
+      </div>
+      <input type="text" id="profileName" placeholder="Имя">
+    </div>
+    <div class="grid2">
+      <label>Ник<input type="text" id="profileHandle"></label>
+      <label>Цвет аватара
+        <input type="color" id="profileColor" value="#1d9bf0" style="width:100%;height:30px;padding:2px;margin-top:4px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);">
+      </label>
+    </div>
+    <label class="chk"><input type="checkbox" id="profileVerified"> Галочка</label>
+    <label>Описание<textarea id="profileBio" style="min-height:50px;"></textarea></label>
+    <div class="grid2">
+      <label>Локация<input type="text" id="profileLocation"></label>
+      <label>Регистрация<input type="text" id="profileJoined"></label>
+    </div>
+    <div class="grid2">
+      <label>Подписки<input type="text" id="profileFollowing"></label>
+      <label>Подписчики<input type="text" id="profileFollowers"></label>
+    </div>
+    <label>Цвет баннера
+      <input type="color" id="profileBannerColor" value="#cfd9de" style="width:100%;height:30px;padding:2px;margin-top:4px;border:1px solid var(--input-border);border-radius:8px;background:var(--input-bg);">
+    </label>
+    <label>Картинка баннера<input type="file" accept="image/*" id="profileBannerInput"></label>
+    <button class="ghost" id="clearBanner">Убрать картинку баннера</button>
+  </div>
+
+  <div class="section" id="postsSection">
+    <h2>Посты</h2>
+    <div id="postsList"></div>
+    <button class="ghost" id="addPost">+ Пост</button>
+  </div>
+
+  <div class="section" id="notificationsSection" style="display:none;">
+    <h2>Лента уведомлений</h2>
+    <div id="notifsList"></div>
+    <button class="ghost" id="addNotif">+ Уведомление</button>
+  </div>
+
+  <div class="section" id="dialogsSection" style="display:none;">
+    <h2>Список диалогов</h2>
+    <div id="dialogsList"></div>
+    <button class="ghost" id="addDialog">+ Диалог</button>
+  </div>
+
+  <div class="section" id="dmSection" style="display:none;">
+    <h2>Настройки диалога</h2>
+    <label class="chk"><input type="checkbox" id="dmGroupToggle"> Групповой чат</label>
+    <label id="dmGroupNameLabel" style="display:none;">Название группы (необязательно)
+      <input type="text" id="dmGroupName" placeholder="Книжный клуб">
+    </label>
+    <div id="dmPeerSection">
+      <div class="row">
+        <div class="av-cell" id="dmPeerAvCell">
+          <input type="file" accept="image/*" id="dmPeerAvInput">
+        </div>
+        <input type="text" id="dmPeerName" placeholder="Имя собеседника">
+        <input type="color" id="dmPeerColor" value="#7856ff">
+      </div>
+      <div class="grid2">
+        <label>Ник<input type="text" id="dmPeerHandle"></label>
+        <label class="chk" style="align-self:end;"><input type="checkbox" id="dmPeerVerified"> Галочка</label>
+      </div>
+      <div id="dmPeerStatusHost"></div>
+    </div>
+    <div id="dmGroupSection" style="display:none;">
+      <div style="font-size:12px; color:var(--muted); margin-bottom:6px;">
+        Участники чата (без тебя). Твои сообщения — «от меня».
+      </div>
+      <div id="dmParticipantsList"></div>
+      <button class="ghost" id="addDmParticipant">+ Участник</button>
+      <button class="ghost" id="addCharsAsParticipants">+ Из персонажей</button>
+      <div id="dmCharsPicker" style="display:none; margin-top:8px;"></div>
+    </div>
+    <h2 style="margin-top:12px;">Сообщения диалога</h2>
+    <div id="dmMessagesList"></div>
+    <button class="ghost" id="addDmMessage">+ Сообщение</button>
+    <button class="ghost" id="addDmSystemMessage">+ Системное</button>
+    <label class="chk" style="margin-top:8px;"><input type="checkbox" id="dmTyping"> Показывать «печатает…»</label>
+    <label id="dmTypingSenderLabel" style="display:none; margin-top:4px;">Кто печатает
+      <select id="dmTypingSender"></select>
+    </label>
+  </div>
+
+  <div class="section">
+    <h2>Экспорт PNG</h2>
+    <button class="success" id="exportCurrent">Скачать текущий экран</button>
+    <button class="success" id="exportAll">Скачать все экраны</button>
+    <button class="success" id="exportCollage">Скачать коллаж</button>
+  </div>
+</aside>
+
+<main class="screens-area" id="screensArea"></main>
+<div class="loading-overlay hidden" id="loadingOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;color:#fff;font-size:15px;">Загрузка…</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script type="module" src="src/js/app.js"></script>
+</body>
+</html>
