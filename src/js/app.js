@@ -2271,6 +2271,8 @@ function boot(){
   migrateAll();
   renderAll();
   setSaveStatus('ok', loaded ? 'Загружено' : 'Новый проект');
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) overlay.classList.add('hidden');
 }
 initDmGroupListeners();
 boot();

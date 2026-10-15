@@ -5,6 +5,14 @@
   --accent:#1d9bf0; --danger:#f4212e; --success:#00ba7c;
   --soft:rgba(127,127,127,0.06);
 }
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hidden {
+  display: none !important;
+}
 body.dark-ui{
   --bg:#15181c; --panel:#1e2329; --text:#e7e9ea; --muted:#71767b;
   --border:#2f3336; --input-bg:#2f3336; --input-border:#3a3f44;
